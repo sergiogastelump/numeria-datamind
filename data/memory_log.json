@@ -1,0 +1,41 @@
+[
+  {
+    "name": "rubi guadalupe sonalo berrelleza",
+    "birthdate": "1989-09-02",
+    "keyword": "exito",
+    "name_value": 318,
+    "name_core": 3,
+    "keyword_value": 73,
+    "keyword_core": 1,
+    "birth_sum": 38,
+    "birth_core": 2,
+    "core": 3,
+    "timestamp": "2025-11-10T18:29:07.544291"
+  },
+  {
+    "gematria": {
+      "text": "sergio gastelum rodriguez",
+      "gematria": 294
+    },
+    "numerology": {
+      "by_name": {
+        "name": "sergio gastelum rodriguez",
+        "name_value": 294,
+        "name_core": 6
+      },
+      "by_birth": {
+        "birthdate": "1960-12-31",
+        "birth_sum": 2003,
+        "birth_core": 5
+      }
+    },
+    "interpretation": {
+      "summary": "Vibración base del nombre: 6.",
+      "details": [
+        "Vibración base del nombre: 6.",
+        "Camino de vida 5.",
+        "Tu nombre tiene una vibración más estable (número par)."
+      ]
+    }
+  }
+]

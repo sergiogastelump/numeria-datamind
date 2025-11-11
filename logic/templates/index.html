@@ -1,0 +1,172 @@
+<!-- app/templates/index.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Numer IA – Analizador</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+    h1 {
+      margin-bottom: 0.25rem;
+    }
+    .subtitle {
+      color: #94a3b8;
+      margin-bottom: 1.5rem;
+    }
+    form {
+      background: #1e293b;
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+    button {
+      background: #38bdf8;
+      color: #0f172a;
+      border: none;
+      padding: 0.6rem 1.25rem;
+      border-radius: 0.5rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0ea5e9;
+    }
+    .result-block {
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Numer IA – Interpretador</h1>
+    <p class="subtitle">
+      Ingresa tu nombre, fecha de nacimiento y (opcional) un <strong>código de poder</strong>
+      para interpretar la vibración. Los códigos de poder pueden ser nombres de equipos, jugadores,
+      palabras simbólicas o combinaciones como “LEO MIAMI 10”.
+    </p>
+
+    <form id="analyzeForm">
+      <label for="name">Nombre completo</label>
+      <input type="text" id="name" name="name" placeholder="Ej. Sergio Gastelum" />
+
+      <label for="birthdate">Fecha de nacimiento</label>
+      <input type="date" id="birthdate" name="birthdate" />
+
+      <label for="power_code">Código de poder (opcional)</label>
+      <input type="text" id="power_code" name="power_code" placeholder="Ej. LEO MIAMI 10" />
+
+      <button type="submit">Analizar</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById("analyzeForm");
+    const resultDiv = document.getElementById("result");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        name: document.getElementById("name").value,
+        birthdate: document.getElementById("birthdate").value,
+        power_code: document.getElementById("power_code").value,
+      };
+
+      const res = await fetch("/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      renderResult(data);
+    });
+
+    function renderResult(data) {
+      resultDiv.innerHTML = "";
+
+      const num = data.numerology;
+      const gem = data.gematria;
+      const interp = data.interpretation;
+      const power = data.power_code_analysis;
+
+      // Numerología
+      const numBlock = document.createElement("div");
+      numBlock.className = "result-block";
+      numBlock.innerHTML = `
+        <div class="section-title">Numerología</div>
+        <pre>${JSON.stringify(num, null, 2)}</pre>
+      `;
+      resultDiv.appendChild(numBlock);
+
+      // Gematría
+      const gemBlock = document.createElement("div");
+      gemBlock.className = "result-block";
+      gemBlock.innerHTML = `
+        <div class="section-title">Gematría</div>
+        <pre>${JSON.stringify(gem, null, 2)}</pre>
+      `;
+      resultDiv.appendChild(gemBlock);
+
+      // Interpretación
+      const interpBlock = document.createElement("div");
+      interpBlock.className = "result-block";
+      interpBlock.innerHTML = `
+        <div class="section-title">Interpretación</div>
+        <pre>${interp.summary}\n\n${interp.details ? interp.details.join("\n") : ""}</pre>
+      `;
+      resultDiv.appendChild(interpBlock);
+
+      // Código de poder (si hay)
+      if (power && power.input) {
+        const powerBlock = document.createElement("div");
+        powerBlock.className = "result-block";
+        powerBlock.innerHTML = `
+          <div class="section-title">Código de poder</div>
+          <pre>${JSON.stringify(power, null, 2)}</pre>
+        `;
+        resultDiv.appendChild(powerBlock);
+      }
+    }
+  </script>
+</body>
+</html>
