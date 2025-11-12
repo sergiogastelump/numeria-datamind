@@ -18,6 +18,9 @@ def home():
 def predict():
     try:
         data = request.get_json(force=True)
+        if not data:
+            raise ValueError("No se recibió cuerpo JSON")
+
         user = data.get("user", "Desconocido")
         text = data.get("text", "").strip()
 
@@ -28,7 +31,6 @@ def predict():
             }), 400
 
         interpretation = interpretar_texto(text)
-
         return jsonify({
             "user": user,
             "input": text,
@@ -38,7 +40,8 @@ def predict():
 
     except Exception as e:
         error_trace = traceback.format_exc()
-        print(f"❌ Error interno en /predict:\n{error_trace}")
+        print(f"❌ ERROR en /predict:\n{error_trace}")
+        # Mostrar el error completo en la respuesta
         return jsonify({
             "error": str(e),
             "trace": error_trace,
@@ -66,4 +69,4 @@ def interpretar_texto(texto):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    app.run(host="0.0.0.0", port=10000, debug=True)
