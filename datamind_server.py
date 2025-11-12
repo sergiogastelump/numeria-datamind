@@ -1,61 +1,11 @@
-# ============================================================
-#  DataMind IA Server — Versión 3.3 Estable
-#  Autor: Sergio Gastelum
-# ============================================================
-
 from flask import Flask, request, jsonify
-import random
+from flask_cors import CORS
 import traceback
 
 app = Flask(__name__)
+CORS(app)
 
-# ============================================================
-# Función principal de interpretación simbólica
-# ============================================================
-def interpretar_texto(user: str, text: str) -> str:
-    """Genera una interpretación simbólica simple (base)."""
-    text_lower = text.lower().strip()
-    
-    # Interpretaciones numerológicas simples
-    numeros = {
-        "7": "El número 7 representa la sabiduría, la introspección y la búsqueda de la verdad.",
-        "33": "El 33 es un número maestro asociado a la compasión y el despertar espiritual.",
-        "111": "Simboliza alineación y apertura de caminos. Señal de sincronía.",
-        "777": "Triple perfección: conexión divina, expansión mental y propósito elevado.",
-        "13": "Transformación profunda, cierre de ciclos y renacimiento."
-    }
-
-    # Interpretaciones simbólicas simples
-    simbolos = {
-        "sol": "El sol representa vitalidad, conciencia y energía creadora.",
-        "luna": "La luna es intuición, misterio y poder femenino interior.",
-        "messi": "Símbolo del genio terrenal que transforma su talento en arte.",
-        "código": "Un código es una señal cifrada del universo, esperando ser comprendida."
-    }
-
-    # Evaluar tipo de texto recibido
-    if text_lower in numeros:
-        return numeros[text_lower]
-    for n in numeros:
-        if n in text_lower:
-            return numeros[n]
-    for s in simbolos:
-        if s in text_lower:
-            return simbolos[s]
-
-    # Interpretación genérica
-    frases = [
-        f"El mensaje '{text}' emite una vibración de equilibrio y propósito oculto.",
-        f"'{text}' contiene una energía simbólica que conecta con tu camino de crecimiento.",
-        f"'{text}' refleja una frecuencia asociada a la transformación interior.",
-        f"'{text}' podría ser una señal del universo para enfocarte en tu misión personal.",
-    ]
-    return random.choice(frases)
-
-# ============================================================
-# Endpoint principal
-# ============================================================
-@app.route("/")
+@app.route("/", methods=["GET"])
 def home():
     return jsonify({
         "message": "Servidor activo y funcionando correctamente 🔥",
@@ -63,21 +13,21 @@ def home():
         "status": "ok"
     }), 200
 
+
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
         data = request.get_json(force=True)
-        user = data.get("user", "Anónimo")
+        user = data.get("user", "Desconocido")
         text = data.get("text", "").strip()
 
         if not text:
-            return jsonify({"error": "No se proporcionó texto para analizar."}), 400
+            return jsonify({
+                "error": "No se recibió texto para analizar",
+                "status": "fail"
+            }), 400
 
-        print(f"🧠 Solicitud recibida de {user}: {text}")
-
-        interpretation = interpretar_texto(user, text)
-
-        print(f"✅ Interpretación generada: {interpretation}")
+        interpretation = interpretar_texto(text)
 
         return jsonify({
             "user": user,
@@ -87,15 +37,29 @@ def predict():
         }), 200
 
     except Exception as e:
-        print(f"[ERROR /predict] {e}")
-        traceback.print_exc()
-        return jsonify({"error": str(e), "status": "fail"}), 500
+        error_trace = traceback.format_exc()
+        print(f"❌ Error interno en /predict:\n{error_trace}")
+        return jsonify({
+            "error": str(e),
+            "trace": error_trace,
+            "status": "error"
+        }), 500
 
-# ============================================================
-# Iniciar servidor
-# ============================================================
+
+def interpretar_texto(texto):
+    texto = texto.lower()
+
+    if "777" in texto:
+        return "🔮 El 777 simboliza perfección espiritual, equilibrio y buena fortuna."
+    elif "11" in texto:
+        return "⚡ El 11 representa intuición, inspiración y despertar espiritual."
+    elif "13" in texto:
+        return "🌑 El 13 indica transformación, cambio profundo y renacimiento."
+    elif "999" in texto:
+        return "🌀 El 999 anuncia cierre de ciclo y expansión de conciencia."
+    else:
+        return "🤔 No se encontró un significado simbólico definido para este código."
+
+
 if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 10000))
-    print(f"🚀 Iniciando DataMind IA Server en puerto {port}...")
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=10000)
