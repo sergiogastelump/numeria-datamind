@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import traceback
+import traceback, sys
 
 app = Flask(__name__)
 CORS(app)
@@ -17,7 +17,10 @@ def home():
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
+        print("🟢 Petición recibida en /predict", file=sys.stderr)
         data = request.get_json(force=True)
+        print(f"📦 Datos recibidos: {data}", file=sys.stderr)
+
         if not data:
             raise ValueError("No se recibió cuerpo JSON")
 
@@ -25,12 +28,11 @@ def predict():
         text = data.get("text", "").strip()
 
         if not text:
-            return jsonify({
-                "error": "No se recibió texto para analizar",
-                "status": "fail"
-            }), 400
+            return jsonify({"error": "No se recibió texto para analizar", "status": "fail"}), 400
 
         interpretation = interpretar_texto(text)
+        print(f"✅ Interpretación: {interpretation}", file=sys.stderr)
+
         return jsonify({
             "user": user,
             "input": text,
@@ -40,8 +42,7 @@ def predict():
 
     except Exception as e:
         error_trace = traceback.format_exc()
-        print(f"❌ ERROR en /predict:\n{error_trace}")
-        # Mostrar el error completo en la respuesta
+        print(f"❌ ERROR en /predict:\n{error_trace}", file=sys.stderr)
         return jsonify({
             "error": str(e),
             "trace": error_trace,
@@ -51,7 +52,6 @@ def predict():
 
 def interpretar_texto(texto):
     texto = texto.lower()
-
     simbolos = {
         "777": "🔮 El 777 simboliza perfección espiritual, equilibrio y buena fortuna.",
         "11": "⚡ El 11 representa intuición, inspiración y despertar espiritual.",
@@ -69,4 +69,5 @@ def interpretar_texto(texto):
 
 
 if __name__ == "__main__":
+    print("🚀 Servidor DataMind iniciado en modo debug absoluto", file=sys.stderr)
     app.run(host="0.0.0.0", port=10000, debug=True)
