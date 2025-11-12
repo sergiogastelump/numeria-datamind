@@ -49,16 +49,20 @@ def predict():
 def interpretar_texto(texto):
     texto = texto.lower()
 
-    if "777" in texto:
-        return "🔮 El 777 simboliza perfección espiritual, equilibrio y buena fortuna."
-    elif "11" in texto:
-        return "⚡ El 11 representa intuición, inspiración y despertar espiritual."
-    elif "13" in texto:
-        return "🌑 El 13 indica transformación, cambio profundo y renacimiento."
-    elif "999" in texto:
-        return "🌀 El 999 anuncia cierre de ciclo y expansión de conciencia."
-    else:
-        return "🤔 No se encontró un significado simbólico definido para este código."
+    simbolos = {
+        "777": "🔮 El 777 simboliza perfección espiritual, equilibrio y buena fortuna.",
+        "11": "⚡ El 11 representa intuición, inspiración y despertar espiritual.",
+        "13": "🌑 El 13 indica transformación, cambio profundo y renacimiento.",
+        "999": "🌀 El 999 anuncia cierre de ciclo y expansión de conciencia.",
+        "8": "💰 El 8 simboliza poder material y equilibrio entre el mundo físico y espiritual.",
+        "22": "🏗️ El 22 representa la construcción de grandes logros con visión y disciplina."
+    }
+
+    for codigo, significado in simbolos.items():
+        if codigo in texto:
+            return significado
+
+    return "🤔 No se encontró un significado simbólico definido para este código."
 
 
 if __name__ == "__main__":
