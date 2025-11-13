@@ -1,1 +1,1 @@
-web: gunicorn -w 1 -k gthread -b 0.0.0.0:$PORT datamind_server:app
+web: python datamind_server.py
