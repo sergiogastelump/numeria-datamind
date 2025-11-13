@@ -1,24 +1,17 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import traceback, sys
-
-app = Flask(__name__)
-CORS(app)
-
-@app.route("/", methods=["GET"])
-def home():
-    return jsonify({
-        "message": "Servidor activo y funcionando correctamente 🔥",
-        "service": "DataMind IA Server",
-        "status": "ok"
-    }), 200
-
-
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
         print("🟢 Petición recibida en /predict", file=sys.stderr)
-        data = request.get_json(force=True)
+
+        # Intento normal
+        try:
+            data = request.get_json(force=True)
+        except Exception:
+            # Reintento forzando codificación tolerante UTF-8
+            raw_data = request.get_data(as_text=True)
+            import json
+            data = json.loads(raw_data.encode('utf-8', 'ignore').decode('utf-8', 'ignore'))
+
         print(f"📦 Datos recibidos: {data}", file=sys.stderr)
 
         if not data:
@@ -48,26 +41,3 @@ def predict():
             "trace": error_trace,
             "status": "error"
         }), 500
-
-
-def interpretar_texto(texto):
-    texto = texto.lower()
-    simbolos = {
-        "777": "🔮 El 777 simboliza perfección espiritual, equilibrio y buena fortuna.",
-        "11": "⚡ El 11 representa intuición, inspiración y despertar espiritual.",
-        "13": "🌑 El 13 indica transformación, cambio profundo y renacimiento.",
-        "999": "🌀 El 999 anuncia cierre de ciclo y expansión de conciencia.",
-        "8": "💰 El 8 simboliza poder material y equilibrio entre el mundo físico y espiritual.",
-        "22": "🏗️ El 22 representa la construcción de grandes logros con visión y disciplina."
-    }
-
-    for codigo, significado in simbolos.items():
-        if codigo in texto:
-            return significado
-
-    return "🤔 No se encontró un significado simbólico definido para este código."
-
-
-if __name__ == "__main__":
-    print("🚀 Servidor DataMind iniciado en modo debug absoluto", file=sys.stderr)
-    app.run(host="0.0.0.0", port=10000, debug=True)
